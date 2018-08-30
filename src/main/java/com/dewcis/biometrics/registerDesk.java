@@ -32,6 +32,7 @@ import com.github.sarxos.webcam.WebcamPanel;
 import com.github.sarxos.webcam.WebcamResolution;
 import java.awt.Dimension;
 import java.awt.Image;
+import java.util.Map;
 import javax.swing.JInternalFrame;
 import javax.swing.JOptionPane;
 
@@ -49,7 +50,7 @@ public class registerDesk implements ActionListener {
 	JPanel mainPanel, detailPanel, buttonPanel, fpPanel, camPanel, statusPanel;
 	List<JButton> btns;
 	List<JLabel> lbls;
-        List<JLabel> msg;
+    List<JLabel> msg;
 	List<JTextField> txfs;
 	List<JLabel> lblPhoto;
 	List<JDesktopPane> dsk;
@@ -74,7 +75,7 @@ public class registerDesk implements ActionListener {
 		// Fields panel with fields
 		detailPanel = new JPanel(null);
 		detailPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED), "Details"));
-		detailPanel.setBounds(5, 5, 800, 150);
+		detailPanel.setBounds(5, 5, 800, 100);
 		mainPanel.add(detailPanel);
 		
 		addField(titles.get(0), rowData.get(0), 10, 10, 120, 20, 200);
@@ -88,24 +89,25 @@ public class registerDesk implements ActionListener {
 		// Butons panel
 		buttonPanel = new JPanel(null);
 		buttonPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED), "Functions"));
-		buttonPanel.setBounds(5, 500, 850, 70);
+		buttonPanel.setBounds(5, 450, 850, 100);
 		mainPanel.add(buttonPanel);
 		
 		btns = new ArrayList<JButton>();
 		addButton("Update", 10, 20, 100, 25, true);
-		addButton("Scan 1", 150, 20, 75, 25, false);
-		addButton("Scan 2", 250, 20, 75, 25, false);
-		addButton("Enroll", 350, 20, 75, 25, false);
-		addButton("Open Camera", 450, 20, 120, 25, false);
-		addButton("Take Photo", 600, 20, 120, 25, false);
-		addButton("Close", 750, 20, 75, 25, true);
+		addButton("Scan 1", 130, 20, 75, 25, false);
+		addButton("Scan 2", 230, 20, 75, 25, false);
+		addButton("Enroll", 330, 20, 75, 25, false);
+		addButton("Open Camera", 430, 20, 120, 25, false);
+		addButton("Take Photo", 580, 20, 120, 25, false);
+		addButton("Inactivate", 720, 20, 120, 25, false);
+		addButton("Close", 720, 60, 120, 25, true);
 		
 		// Fingerprint panel
 		txfs = new ArrayList<JTextField>();
 		lbls = new ArrayList<JLabel>();
 		fpPanel = new JPanel(null);
 		fpPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED), "Finger Prints"));
-		fpPanel.setBounds(5, 180, 400, 300);
+		fpPanel.setBounds(5, 130, 400, 300);
 		mainPanel.add(fpPanel);
 
 		ImageIcon image1 = new ImageIcon(""+myImage.results+"/finger print images/"+jStudent.getString("user_id")+"T1"+".PNG");
@@ -126,7 +128,7 @@ public class registerDesk implements ActionListener {
 		dsk = new ArrayList<JDesktopPane>();
 		camPanel = new JPanel(null);
 		camPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED), "Photo"));
-		camPanel.setBounds(425, 180, 350, 300);
+		camPanel.setBounds(425, 130, 350, 300);
 		mainPanel.add(camPanel);
 
 		ImageIcon pImage = new ImageIcon(""+myImage.results+"/images/"+jStudent.getString("user_id")+".PNG");
@@ -139,13 +141,13 @@ public class registerDesk implements ActionListener {
 
 
 		// Status panel
-                msg = new ArrayList<JLabel>();
+        msg = new ArrayList<JLabel>();
 		statusPanel = new JPanel(null);
 		statusPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED), "Status"));
 		statusPanel.setBounds(5, 580, 850, 70);
 		mainPanel.add(statusPanel);
                 
-                addMessage("Message", 10, 10, 120, 20, 600);
+        addMessage("Message", 10, 10, 120, 20, 600);
 		
 		// Load on main form
 		eFrame = new JFrame("Enroll");
@@ -165,7 +167,7 @@ public class registerDesk implements ActionListener {
 		detailPanel.add(lbValue);
 	}
         
-        public void addMessage(String fieldTitle, int x, int y, int w, int h, int dw) {
+    public void addMessage(String fieldTitle, int x, int y, int w, int h, int dw) {
 		JLabel lbTitle = new JLabel(fieldTitle + " : ");
 		lbTitle.setBounds(x, y, w, h);
 		statusPanel.add(lbTitle);
@@ -232,12 +234,20 @@ public class registerDesk implements ActionListener {
 			eDialog.dispose();
 		}
 
+		if(ev.getActionCommand().equals("Inactivate")) {
+            jStudent.remove("status");
+            jStudent.put("status", "IN");
+            dev.acinUser(jStudent.getString("user_id"),sessionId,jStudent);
+            
+        }
+
 		if(ev.getActionCommand().equals("Update")) {
-                        msg.get(0).setText("Update");
+            msg.get(0).setText("Update");
 			btns.get(0).setEnabled(false);
 			btns.get(1).setEnabled(true);
 			btns.get(2).setEnabled(true);
-                        btns.get(4).setEnabled(true);
+            btns.get(4).setEnabled(true);
+            btns.get(6).setEnabled(true);
 		}
 
 		if(ev.getActionCommand().equals("Scan 1")) {
@@ -256,10 +266,10 @@ public class registerDesk implements ActionListener {
 			    finger1Details=null;
 			    // lbls.get(0).setIcon(fImage1);
 			}else if(finger1Details.contains("Device not found.")){
-                            System.out.println("Device not found.");
-                            finger1Details=null;
-                            // lbls.get(1).setIcon(fImage1);
-                        }else if(finger1Details.contains("Device Timed Out")){
+                System.out.println("Device not found.");
+                finger1Details=null;
+                // lbls.get(1).setIcon(fImage1);
+            }else if(finger1Details.contains("Device Timed Out")){
 			    System.out.println("Device Timed Out");
 			    finger1Details=null;
 			    // lbls.get(0).setIcon(fImage1);
@@ -344,7 +354,7 @@ public class registerDesk implements ActionListener {
 				System.out.println("BASE 2010 Finger Prints : " + jfinger.toString());
 				String enResults =dev.enroll(jStudent.getString("user_id"),sessionId,jfinger);
                                 
-                                msg.get(0).setText(enResults);
+                msg.get(0).setText(enResults);
 
 			}
 		}
@@ -362,7 +372,7 @@ public class registerDesk implements ActionListener {
 	            webcam.setCustomViewSizes(nonStandardResolutions);
 	            webcam.setViewSize(WebcamResolution.HD.getSize());
 	            webcam.open(true);
-                    msg.get(0).setText("Webcam Opened");
+                msg.get(0).setText("Webcam Opened");
 
 	            WebcamPanel panel = new WebcamPanel(webcam, false);
 	            panel.setPreferredSize(WebcamResolution.QVGA.getSize());
@@ -407,60 +417,64 @@ public class registerDesk implements ActionListener {
 				Image newPImg = imgP.getScaledInstance(330,240,  Image.SCALE_SMOOTH);
 				pImage = new ImageIcon(newPImg);
 
-                                msg.get(0).setText("Photo Taken Successfully");
+                msg.get(0).setText("Photo Taken Successfully");
 				lblPhoto.get(0).setVisible(true);
 				lblPhoto.get(0).setIcon(pImage);
-            }
-            
+            }   
         }
 	}
-    
 
 	public void addJstudent(Vector<String> rowData) {
 
-		jStudent = new JSONObject();
+        base_url base = new base_url();
+        Map<String, String> mapResults = base.base_url();
+        
+        jStudent = new JSONObject();
+        
+        
+        jStudent.put("login_id", rowData.get(0));
+        jStudent.put("name", rowData.get(1));
+        jStudent.put("phone_number", rowData.get(3));
+        jStudent.put("email", rowData.get(4));
+        jStudent.put("user_id", rowData.get(2));
+        jStudent.put("password", "password");
+        jStudent.put("pin", "");
+        jStudent.put("security_level", "");
+        jStudent.put("start_datetime", "2017-01-13T00:00:00.000Z");
+        jStudent.put("expiry_datetime", "2030-01-13T23:59:59.000Z");
+        jStudent.put("status", "AC");
+        
+        JSONArray jAccessGroups = new JSONArray();
+        JSONObject jAccessGroup = new JSONObject();
+        jAccessGroup.put("id", mapResults.get("access_group_id"));
+        jAccessGroup.put("included_by_user_group", "Yes");
+        jAccessGroup.put("name", mapResults.get("access_group_name"));
+        jAccessGroups.put(jAccessGroup);
+        
+        jStudent.put("access_groups", jAccessGroups);
+        
+        JSONObject jUserGroup = new JSONObject();
+        jUserGroup.put("id", mapResults.get("user_group_id"));
+        jUserGroup.put("name", mapResults.get("user_group_name"));
+        
+        jStudent.put("user_group", jUserGroup);
+        
+        JSONObject jpermission = new JSONObject();
+        jpermission.put("id", "255");
+        jpermission.put("name", "User");
+        
+        
+        JSONArray jpermissions = new JSONArray();
+        JSONObject jpermissionls = new JSONObject();
+        jpermissionls.put("allowed_group_id_list", "[1]");
+        jpermissionls.put("module", "CARD");
+        jpermissionls.put("read", true);
+        jpermissionls.put("write", true);
+        jpermissions.put(jpermissionls);
+        
+        jpermission.put("permissions", jpermissions);
+        jStudent.put("permission", jpermission);
 
-		jStudent.put("login_id", rowData.get(0));
-		jStudent.put("name", rowData.get(1));
-		jStudent.put("phone_number", rowData.get(3));
-		jStudent.put("email", rowData.get(4));
-		jStudent.put("user_id", rowData.get(2));
-		jStudent.put("password", "password");
-		jStudent.put("pin", "");
-		jStudent.put("security_level", "");
-		jStudent.put("start_datetime", "2017-01-13T00:00:00.000Z");
-		jStudent.put("expiry_datetime", "2030-01-13T23:59:59.000Z");
-		jStudent.put("status", "AC");
-
-		JSONArray jAccessGroups = new JSONArray();
-		JSONObject jAccessGroup = new JSONObject();
-		jAccessGroup.put("id", "5");
-		jAccessGroup.put("included_by_user_group", "Yes");
-		jAccessGroup.put("name", "Main Entrance");
-		jAccessGroups.put(jAccessGroup);
-
-		jStudent.put("access_groups", jAccessGroups);
-
-		JSONObject jUserGroup = new JSONObject();
-		jUserGroup.put("id", "1030");
-		jUserGroup.put("name", "Entry Office users");
-
-		jStudent.put("user_group", jUserGroup);
-
-		JSONObject jpermission = new JSONObject();
-		jpermission.put("id", "255");
-		jpermission.put("name", "User");
-
-
-		JSONArray jpermissions = new JSONArray();
-		JSONObject jpermissionls = new JSONObject();
-		jpermissionls.put("allowed_group_id_list", "[1]");
-		jpermissionls.put("module", "CARD");
-		jpermissionls.put("read", true);
-		jpermissionls.put("write", true);
-		jpermissions.put(jpermissionls);
-
-		jpermission.put("permissions", jpermissions);
-		jStudent.put("permission", jpermission);
 	}
+    
 }

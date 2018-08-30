@@ -16,6 +16,7 @@ import java.sql.Connection;
 import java.sql.Statement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import java.util.logging.Logger;
@@ -30,6 +31,9 @@ public class tableModel extends AbstractTableModel {
 	
 	private Vector<Vector<String>> data;
 	private Vector<String> titles;
+	String[] userAC = null;
+	String[] userIN = null;
+	String[] userALL = null;
 	
 	public tableModel() {
 		titles = new Vector<String>();
@@ -67,66 +71,108 @@ public class tableModel extends AbstractTableModel {
 	public boolean isCellEditable(int row, int col) {
 		return false;
 	}
+
+	public void userslist(String sessionId){
+            
+        try {
+            Device dev = new Device();
+            String results = dev.userslist(sessionId);
+            
+            JSONObject jResults = new JSONObject(results);
+            JSONArray jresponse = (JSONArray) jResults.get("records");
+            
+            ArrayList<Object> listAC = new ArrayList<Object>();
+            ArrayList<Object> listIN = new ArrayList<Object>();
+            ArrayList<Object> listALL = new ArrayList<Object>();
+            
+            for(int i=0; i<jresponse.length(); i++){
+                if (jresponse.getJSONObject(i).getString("status").equals("AC")) {
+                    listAC.add(""+jresponse.getJSONObject(i).getString("user_id")+"");
+                }else if (jresponse.getJSONObject(i).getString("status").equals("IN")) {
+                    listIN.add(""+jresponse.getJSONObject(i).getString("user_id")+"");
+                }
+                listALL.add(""+jresponse.getJSONObject(i).getString("user_id")+"");
+            }
+            
+            userAC = listAC.toArray(new String[0]);
+            userIN = listIN.toArray(new String[0]);
+            userALL	= listALL.toArray(new String[0]);
+            
+            
+        } catch (URISyntaxException ex) {
+            Logger.getLogger(tableModel.class.getName()).log(Level.SEVERE, null, ex);
+        }
+            
+	}
 	
-	public void makeTable(Connection db, String mySql, Map<String, String> fields,String sessionId) {
-		try {
-                    Device dev = new Device();
-                    String[] useridList = dev.userslist(sessionId);
-                    // Add the titles
-                    for(String field : fields.keySet())
-                        titles.add(fields.get(field));
-                    
-                    try {
-                        Statement st = db.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
-                        ResultSet rs = st.executeQuery(mySql);
-                        while(rs.next()) {
-                            if(Arrays.asList(useridList).contains(rs.getString("entity_id"))){
-                                Vector<String> row = new Vector<String>();
-                                for(String field : fields.keySet())
-                                    row.add(rs.getString(field));
-                                
-                                data.add(row);
-                            }
-                        }
-                    } catch (SQLException ex) {
-                        log.severe("Database connection SQL Error : " + ex);
+	public void makeTableIN(Connection db, String mySql, Map<String, String> fields,String sessionId) {
+            userslist(sessionId);
+            // Add the titles
+            for(String field : fields.keySet())
+                titles.add(fields.get(field));
+            try {
+                Statement st = db.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+                ResultSet rs = st.executeQuery(mySql);
+                while(rs.next()) {
+                    if(Arrays.asList(userIN).contains(rs.getString("entity_id"))){
+                        Vector<String> row = new Vector<String>();
+                        for(String field : fields.keySet())
+                            row.add(rs.getString(field));
+                        
+                        data.add(row);
                     }
-                } catch (URISyntaxException ex) {
-			Logger.getLogger(tableModel.class.getName()).log(Level.SEVERE, null, ex);
-		}
+                }
+            } catch (SQLException ex) {
+                log.severe("Database connection SQL Error : " + ex);
+            }
 	}
 
-	public void makeTableNon(Connection db, String mySql, Map<String, String> fields,String sessionId) {
-		try {
-                Device dev = new Device();
-                String[] useridList = dev.userslist(sessionId);
-                // System.out.println("BASE user id list" + Arrays.toString(useridList));
-                
-                // Add the titles
-                for(String field : fields.keySet())
-                    titles.add(fields.get(field));
-                
-                try {
-                    Statement st = db.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
-                    ResultSet rs = st.executeQuery(mySql);
-                    while(rs.next()) {
-                        if(Arrays.asList(useridList).contains(rs.getString("entity_id"))){
-                            
-                        }else{
-                        	Vector<String> row = new Vector<String>();
-                            for(String field : fields.keySet())
-                                row.add(rs.getString(field));
-                            	
-                            
-                            data.add(row);
-                        }
+	public void makeTableReg(Connection db, String mySql, Map<String, String> fields,String sessionId) {
+            userslist(sessionId);
+            // Add the titles
+            for(String field : fields.keySet())
+                titles.add(fields.get(field));
+            try {
+                Statement st = db.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+                ResultSet rs = st.executeQuery(mySql);
+                while(rs.next()) {
+                    if(Arrays.asList(userAC).contains(rs.getString("entity_id"))){
+                        Vector<String> row = new Vector<String>();
+                        for(String field : fields.keySet())
+                            row.add(rs.getString(field));
+                        
+                        data.add(row);
                     }
-                } catch (SQLException ex) {
-                    log.severe("Database connection SQL Error : " + ex);
                 }
-             } catch (URISyntaxException ex) {
-			Logger.getLogger(tableModel.class.getName()).log(Level.SEVERE, null, ex);
-		}
+            } catch (SQLException ex) {
+                log.severe("Database connection SQL Error : " + ex);
+            }
+	}	
+
+	public void makeTableNon(Connection db, String mySql, Map<String, String> fields,String sessionId) {
+            
+            userslist(sessionId);
+            // Add the titles
+            for(String field : fields.keySet())
+                titles.add(fields.get(field));
+            try {
+                Statement st = db.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+                ResultSet rs = st.executeQuery(mySql);
+                while(rs.next()) {
+                    if(Arrays.asList(userALL).contains(rs.getString("entity_id"))){
+                        
+                    }else{
+                        Vector<String> row = new Vector<String>();
+                        for(String field : fields.keySet())
+                            row.add(rs.getString(field));
+                        
+                        
+                        data.add(row);
+                    }
+                }
+            } catch (SQLException ex) {
+                log.severe("Database connection SQL Error : " + ex);
+            }
 	}
  
 }

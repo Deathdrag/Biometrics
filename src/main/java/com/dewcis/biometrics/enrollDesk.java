@@ -32,6 +32,9 @@ import com.github.sarxos.webcam.WebcamPanel;
 import com.github.sarxos.webcam.WebcamResolution;
 import java.awt.Dimension;
 import java.awt.Image;
+import java.net.MalformedURLException;
+import java.util.Map;
+import java.util.logging.Level;
 import javax.swing.JInternalFrame;
 import javax.swing.JOptionPane;
 
@@ -273,7 +276,7 @@ public class enrollDesk implements ActionListener {
 			    base64Decoder imgFingerPrint = new base64Decoder();
 			    imgFingerPrint.decode(jFingerScan.getString("template_image0"),jStudent.getString("user_id")+"T1");
 			    
-			    ImageIcon imageF1 = new ImageIcon(""+imgFingerPrint.results+"/finger print images/"+jStudent.getString("user_id")+"T1"+".PNG");
+			   	ImageIcon imageF1 = new ImageIcon(""+imgFingerPrint.results+"/finger print images/"+jStudent.getString("user_id")+"T1"+".PNG");
 			    Image imgF1 = imageF1.getImage();
 			    Image newF1 = imgF1.getScaledInstance(180,200,  Image.SCALE_SMOOTH);
 			    imageF1 = new ImageIcon(newF1);
@@ -417,49 +420,54 @@ public class enrollDesk implements ActionListener {
 
 	public void addJstudent(Vector<String> rowData) {
 
-		jStudent = new JSONObject();
-
-		jStudent.put("login_id", rowData.get(0));
-		jStudent.put("name", rowData.get(1));
-		jStudent.put("phone_number", rowData.get(3));
-		jStudent.put("email", rowData.get(4));
-		jStudent.put("user_id", rowData.get(2));
-		jStudent.put("password", "password");
-		jStudent.put("pin", "");
-		jStudent.put("security_level", "");
-		jStudent.put("start_datetime", "2017-01-13T00:00:00.000Z");
-		jStudent.put("expiry_datetime", "2030-01-13T23:59:59.000Z");
-		jStudent.put("status", "AC");
-
-		JSONArray jAccessGroups = new JSONArray();
-		JSONObject jAccessGroup = new JSONObject();
-		jAccessGroup.put("id", "5");
-		jAccessGroup.put("included_by_user_group", "Yes");
-		jAccessGroup.put("name", "Main Entrance");
-		jAccessGroups.put(jAccessGroup);
-
-		jStudent.put("access_groups", jAccessGroups);
-
-		JSONObject jUserGroup = new JSONObject();
-		jUserGroup.put("id", "1030");
-		jUserGroup.put("name", "Entry Office users");
-
-		jStudent.put("user_group", jUserGroup);
-
-		JSONObject jpermission = new JSONObject();
-		jpermission.put("id", "255");
-		jpermission.put("name", "User");
-
-
-		JSONArray jpermissions = new JSONArray();
-		JSONObject jpermissionls = new JSONObject();
-		jpermissionls.put("allowed_group_id_list", "[1]");
-		jpermissionls.put("module", "CARD");
-		jpermissionls.put("read", true);
-		jpermissionls.put("write", true);
-		jpermissions.put(jpermissionls);
-
-		jpermission.put("permissions", jpermissions);
-		jStudent.put("permission", jpermission);
+                base_url base = new base_url();
+                Map<String, String> mapResults = base.base_url();
+                
+                jStudent = new JSONObject();
+                
+                
+                jStudent.put("login_id", rowData.get(0));
+                jStudent.put("name", rowData.get(1));
+                jStudent.put("phone_number", rowData.get(3));
+                jStudent.put("email", rowData.get(4));
+                jStudent.put("user_id", rowData.get(2));
+                jStudent.put("password", "password");
+                jStudent.put("pin", "");
+                jStudent.put("security_level", "");
+                jStudent.put("start_datetime", "2017-01-13T00:00:00.000Z");
+                jStudent.put("expiry_datetime", "2030-01-13T23:59:59.000Z");
+                jStudent.put("status", "AC");
+                
+                JSONArray jAccessGroups = new JSONArray();
+                JSONObject jAccessGroup = new JSONObject();
+                jAccessGroup.put("id", mapResults.get("access_group_id"));
+                jAccessGroup.put("included_by_user_group", "Yes");
+                jAccessGroup.put("name", mapResults.get("access_group_name"));
+                jAccessGroups.put(jAccessGroup);
+                
+                jStudent.put("access_groups", jAccessGroups);
+                
+                JSONObject jUserGroup = new JSONObject();
+                jUserGroup.put("id", mapResults.get("user_group_id"));
+                jUserGroup.put("name", mapResults.get("user_group_name"));
+                
+                jStudent.put("user_group", jUserGroup);
+                
+                JSONObject jpermission = new JSONObject();
+                jpermission.put("id", "255");
+                jpermission.put("name", "User");
+                
+                
+                JSONArray jpermissions = new JSONArray();
+                JSONObject jpermissionls = new JSONObject();
+                jpermissionls.put("allowed_group_id_list", "[1]");
+                jpermissionls.put("module", "CARD");
+                jpermissionls.put("read", true);
+                jpermissionls.put("write", true);
+                jpermissions.put(jpermissionls);
+                
+                jpermission.put("permissions", jpermissions);
+                jStudent.put("permission", jpermission);
+        
 	}
 }

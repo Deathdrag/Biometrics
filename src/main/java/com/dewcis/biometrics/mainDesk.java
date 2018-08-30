@@ -30,6 +30,7 @@ import javax.swing.ImageIcon;
 import javax.swing.table.DefaultTableModel;
 
 import com.dewcis.utils.tableModel;
+import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.time.LocalDate;
 import java.time.Month;
@@ -59,12 +60,14 @@ public class mainDesk extends JPanel implements MouseListener , ActionListener{
 	List<JComboBox> cmbs;
 	
 	Map<String, String> fields;
-	JTabbedPane tabbedPane = new JTabbedPane();
 	
-	JPanel nonRegPanel,regPanel,verifyPanel,acInPanel,logPanel;
-	JPanel detailPanel, buttonPanel, fpPanel, camPanel, statusPanel,devicePanel,searchPanel;
-	JTable tableReg,tableNon,tableAcIn,tableLog;
-	tableModel tModel,tNonRegModel,tInAcModel;
+	JTabbedPane tabbedPane = new JTabbedPane();
+	JTabbedPane searchPane = new JTabbedPane();
+	
+	JPanel nonRegPanel,	regPanel,	verifyPanel,	acInPanel,	logPanel;
+	JPanel detailPanel, buttonPanel, fpPanel, camPanel, statusPanel,	devicePanel,	searchPanel;
+	JTable tableReg,	tableNon,	tableIN,	tableLog;
+	tableModel tModel,	tNonRegModel,	tINModel;
 	DefaultTableModel logModel;
 
 	String sessionId = null;
@@ -72,79 +75,86 @@ public class mainDesk extends JPanel implements MouseListener , ActionListener{
 
 	public mainDesk(Connection db) {
 		super(new BorderLayout());
-	
-		this.db = db;
-		
-		
-
-		// Non Registred user panel
-		nonRegPanel = new JPanel(new BorderLayout());
-		tabbedPane.addTab("Not Registred", nonRegPanel);
-
-		//Registred user panel
-		regPanel = new JPanel(new BorderLayout());
-		tabbedPane.addTab("Registred", regPanel);
-
-		//activate Deactivate user panel
-		acInPanel = new JPanel(new BorderLayout());
-		tabbedPane.addTab("Activate / Inactivate Users", acInPanel);
-
-		//log user panel
-		logPanel = new JPanel(new BorderLayout());
-		tabbedPane.addTab("users Logs", logPanel);
-
-		rowData = new Vector<Vector<String>>();
-		columnNames = new Vector<String>();
-		columnNames.add("Date Time"); columnNames.add("Device ID"); columnNames.add("Device Name"); 
-		columnNames.add("Entity ID"); columnNames.add("User Name");columnNames.add("Event");
-
+        this.db = db;
+        
+        // Non Registred user panel
+        nonRegPanel = new JPanel(new BorderLayout());
+        tabbedPane.addTab("Not Registred", nonRegPanel);
+        
+        //Registred user panel
+        regPanel = new JPanel(new BorderLayout());
+        tabbedPane.addTab("Registred", regPanel);
+        
+        //activate Deactivate user panel
+        acInPanel = new JPanel(new BorderLayout());
+        tabbedPane.addTab("Inactivate Users", acInPanel);
+        
+        //log user panel
+        logPanel = new JPanel(new BorderLayout());
+        tabbedPane.addTab("users Logs", logPanel);
+        
+        rowData = new Vector<Vector<String>>();
+        columnNames = new Vector<String>();
+        columnNames.add("Date Time"); columnNames.add("Device ID"); columnNames.add("Device Name");
+        columnNames.add("Entity ID"); columnNames.add("User Name");columnNames.add("Event");
+        
         logModel = new DefaultTableModel(rowData,columnNames);
         tableLog = new JTable(logModel);
         JScrollPane scrollPanereg = new JScrollPane(tableLog);
         logPanel.add(scrollPanereg, BorderLayout.CENTER);
-		
+        
+        // Getting details from the config.txt from class base_url
+        base_url base = new base_url();
+        Map<String, String> map = base.base_url();
+
+		String baseUrl 		= map.get("baseUrl");
+		String apiName		= map.get("apiName"); 
+		String userId 		= map.get("user_name"); 
+		String password		= map.get("user_password");
 		// Login to device
-		sessionId = Device.login("admin", "admin", "admin747");
-		
-		// Add students on table
-		getStudents();
-		getLogs();
-
-		//Verify user panel
-		btns = new ArrayList<JButton>();
-		txfs = new ArrayList<JTextField>();
-		cmbs = new ArrayList<JComboBox>();
-
-		verifyPanel = new JPanel(null);
-		devicePanel = new JPanel(null);
-		devicePanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED), "Verify User"));
-		devicePanel.setBounds(5, 5, 500, 50);
-		verifyPanel.add(devicePanel);
-
-		addDevice("Device ID ", "541612052", 10, 20, 100, 20, 200);
-
-		searchPanel = new JPanel(null);
-		searchPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED), "Search Logs"));
-		searchPanel.setBounds(5, 100, 800, 150);
-		verifyPanel.add(searchPanel);
-
-		addSearch("Device ID ", "541612052", 10, 20, 120, 20, 300);
-		addSearch("Start Date ", "2018-08-01", 10, 50, 120, 20, 300);
-		addSearch("End Date ", "2018-08-31",10, 80, 120, 20, 300);
-		addCombox("Event names ", eventCodeName,10, 110, 120, 20, 300);
-
-		// Butons panel
-		buttonPanel = new JPanel(null);
-		buttonPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED), "Functions"));
-		buttonPanel.setBounds(5, 300, 800, 70);
-		verifyPanel.add(buttonPanel);
-
-		addButton("Verify", 350, 20, 75, 25, true);
-		addButton("Search", 450, 20, 75, 25, true);
-
-		tabbedPane.addTab("Verify User / Search logs", verifyPanel);
-
-		super.add(tabbedPane, BorderLayout.CENTER);
+        Device log = new Device();
+        sessionId = log.login(apiName, userId, password,baseUrl);
+        
+        // Add students on table
+        getStudents();
+        getLogs();
+        
+        //Verify user panel
+        btns = new ArrayList<JButton>();
+        txfs = new ArrayList<JTextField>();
+        cmbs = new ArrayList<JComboBox>();
+        
+        verifyPanel = new JPanel(null);
+        devicePanel = new JPanel(null);
+        devicePanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED), "Verify User"));
+        devicePanel.setBounds(5, 5, 500, 50);
+        verifyPanel.add(devicePanel);
+        
+        addDevice("Device ID ", "541612052", 10, 20, 100, 20, 200);
+        
+        searchPanel = new JPanel(null);
+        searchPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED), "Search Logs"));
+        searchPanel.setBounds(5, 100, 800, 150);
+        verifyPanel.add(searchPanel);
+        
+        addSearch("Device ID ", "541612052", 10, 20, 120, 20, 300);
+        addSearch("Start Date ", "2018-08-01", 10, 50, 120, 20, 300);
+        addSearch("End Date ", "2018-08-31",10, 80, 120, 20, 300);
+        addCombox("Event names ", eventCodeName,10, 110, 120, 20, 300);
+        
+        // Butons panel
+        buttonPanel = new JPanel(null);
+        buttonPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED), "Functions"));
+        buttonPanel.setBounds(5, 300, 800, 70);
+        verifyPanel.add(buttonPanel);
+        
+        addButton("Verify", 350, 20, 75, 25, true);
+        addButton("Search", 450, 20, 75, 25, true);
+        
+        tabbedPane.addTab("Verify User / Search logs", verifyPanel);
+        
+        super.add(tabbedPane, BorderLayout.CENTER);
+            
 	}
 
 	
@@ -172,24 +182,22 @@ public class mainDesk extends JPanel implements MouseListener , ActionListener{
         
         //Creating table for Registered students
         tModel = new tableModel();
-        tModel.makeTable(db, mySql, fields,sessionId);
+        tModel.makeTableReg(db, mySql, fields,sessionId);
         tableReg = new JTable(tModel);
         tableReg.addMouseListener(this);
         JScrollPane scrollPanereg = new JScrollPane(tableReg);
         regPanel.add(scrollPanereg, BorderLayout.CENTER);
 
-        //Creating table for Active and Inactive students
-        tInAcModel = new tableModel();
-        tInAcModel.makeTable(db, mySql, fields,sessionId);
-        tableAcIn = new JTable(tInAcModel);
-        tableAcIn.addMouseListener(this);
-        JScrollPane scrollPaneInAc = new JScrollPane(tableAcIn);
+        //Creating table for Inactive students
+        tINModel = new tableModel();
+        tINModel.makeTableIN(db, mySql, fields,sessionId);
+        tableIN = new JTable(tINModel);
+        tableIN.addMouseListener(this);
+        JScrollPane scrollPaneInAc = new JScrollPane(tableIN);
         acInPanel.add(scrollPaneInAc, BorderLayout.CENTER);
-       
 	}
 
 	public void addButton(String btTitle, int x, int y, int w, int h, boolean enabled) {
-		
 		JButton btn = new JButton(btTitle);
 		btn.setBounds(x, y, w, h);
 		btn.addActionListener(this);
@@ -345,19 +353,21 @@ public class mainDesk extends JPanel implements MouseListener , ActionListener{
 			if ((aRow != -1) && (ev.getClickCount() == 2)) {
 				int index = tableReg.convertRowIndexToModel(aRow);
 				registerDesk rDesk = new registerDesk(tModel.getTitles(), tModel.getRowValues(index), sessionId);
+				// frame.revalidate();
+				// frame.repaint();
 			}
 		}else if(selectedIndex == 2) {
 			// Selected Row in the Active/Inactive users in the third JTabbedPane called "Activate / Inactivate Users ".
 			System.out.println("selected tab Index is: " + selectedIndex);
-			int cRow = tableAcIn.getSelectedRow();
+			int cRow = tableIN.getSelectedRow();
 			if ((cRow != -1) && (ev.getClickCount() == 2)) {
-				int index = tableAcIn.convertRowIndexToModel(cRow);
-				Vector<String> rowData = tInAcModel.getRowValues(index);
-                String user_id = rowData.get(2);
+				int index = tableIN.convertRowIndexToModel(cRow);
+				Vector<String> rowData = tINModel.getRowValues(index);
+                                String user_id = rowData.get(2);
 				Device dev = new Device();
 				String userResults = dev.userDetails(user_id,sessionId);
 
-				acInDesk aDesk = new acInDesk(tInAcModel.getTitles(), userResults, sessionId);
+				activateDesk aDesk = new activateDesk(tINModel.getTitles(), userResults, sessionId);
 			}
 		}
 	}

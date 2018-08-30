@@ -30,7 +30,7 @@ import java.awt.Image;
 
 import javax.swing.border.LineBorder;
 
-public class acInDesk implements ActionListener {
+public class activateDesk implements ActionListener {
 	Logger log = Logger.getLogger(enrollDesk.class.getName());
 
 	Connection db = null;
@@ -49,7 +49,7 @@ public class acInDesk implements ActionListener {
 	
 	base64Decoder myImage = new base64Decoder();
 
-	public acInDesk(Vector<String> titles,String student, String sessionId) {
+	public activateDesk(Vector<String> titles,String student, String sessionId) {
 		this.sessionId = sessionId;
 		
 		jStudent = new JSONObject(student);
@@ -76,17 +76,9 @@ public class acInDesk implements ActionListener {
 		mainPanel.add(buttonPanel);
 		
 		btns = new ArrayList<JButton>();
-		addButton("Activate", 450, 20, 120, 25, false);
-		addButton("Inactivate", 600, 20, 120, 25, false);
+		addButton("Activate", 600, 20, 120, 25, false);
 		addButton("Close", 750, 20, 75, 25, true);
-
-		if(jStudent.getString("status").equals("AC")){
-            btns.get(0).setVisible(false);
-            btns.get(1).setVisible(true);
-        }else if (jStudent.getString("status").equals("IN")) {
-            btns.get(1).setVisible(false);
-            btns.get(0).setVisible(true);
-        }
+        btns.get(0).setVisible(true);
 		
 		// Fingerprint panel
 		lbls = new ArrayList<JLabel>();
@@ -131,7 +123,7 @@ public class acInDesk implements ActionListener {
 		
 		// Load on main form
 		eFrame = new JFrame("Enroll");
-		eDialog = new JDialog(eFrame , "Activate / Inactivate User", true);
+		eDialog = new JDialog(eFrame , "Activate User", true);
 		eDialog.setSize(900, 700);
 		eDialog.getContentPane().add(mainPanel, BorderLayout.CENTER);
 		eDialog.setVisible(true);
@@ -185,13 +177,6 @@ public class acInDesk implements ActionListener {
 		if(ev.getActionCommand().equals("Activate")) {
             jStudent.remove("status");
             jStudent.put("status", "AC");
-            dev.acinUser(jStudent.getString("user_id"),sessionId,jStudent);
-            
-        }
-
-        if(ev.getActionCommand().equals("Inactivate")) {
-            jStudent.remove("status");
-            jStudent.put("status", "IN");
             dev.acinUser(jStudent.getString("user_id"),sessionId,jStudent);
             
         }

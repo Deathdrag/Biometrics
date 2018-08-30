@@ -1,0 +1,15 @@
+com\dewcis\biometrics\VerifyDesk.class
+com\dewcis\utils\tableModel.class
+com\dewcis\biometrics\base_url.class
+com\dewcis\biometrics\base64Decoder.class
+com\dewcis\biometrics\mainDesk.class
+com\dewcis\biometrics\activateDesk.class
+com\dewcis\biometrics\registerDesk.class
+com\dewcis\biometrics\Device.class
+com\dewcis\utils\Bio.class
+com\dewcis\biometrics\searchLogDesk.class
+com\dewcis\utils\webdav.class
+com\dewcis\biometrics\enrollDesk.class
+com\dewcis\biometrics\httpClient.class
+com\dewcis\biometrics\loginDesk.class
+com\dewcis\swing\BImagePanel.class

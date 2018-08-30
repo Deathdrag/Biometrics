@@ -1,15 +1,16 @@
 package com.dewcis.biometrics;
 
-
 import com.github.sarxos.webcam.Webcam;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
@@ -22,11 +23,12 @@ import org.json.JSONObject;
 
 public class Device {
 	Logger log = Logger.getLogger(Device.class.getName());
-
-	
-	String baseUrl = "http://192.168.3.195:8795/v2";
-
-	public static String login(String apiName, String userId, String password) {
+    
+    base_url base = new base_url();
+    Map<String, String> mapResults = base.base_url();
+	String baseUrl = mapResults.get("baseUrl");
+    //Getting sessionid for the logged in user
+	public String login(String apiName, String userId, String password,String url) {
 		
 		String sessionId = null;
 		
@@ -40,7 +42,9 @@ public class Device {
 		jLogin.put("user_id", userId);
 		
 		httpClient client = new httpClient();
-		String cookies = client.getCookies("http://192.168.0.128:8795/v2/login", jLogin.toString());
+		String userFile = "/login";
+        String uri = url + userFile;
+		String cookies = client.getCookies(uri, jLogin.toString());
 		
 		System.out.println("BASE COOKIES : " + cookies);
 		if(cookies != null) sessionId = cookies.split("=")[1].split(";")[0].trim();
@@ -48,7 +52,7 @@ public class Device {
 		
 		return sessionId;
 	}
-
+	//Adding user to the biostar server
 	public String addUser(JSONObject jStudent,String sessionId) {
 	    String userFile = "/users";
 	    String uri = baseUrl + userFile;
@@ -58,8 +62,8 @@ public class Device {
 	    return results;
 
     }
-
-    public String scan(String deviceID,String sessionId){
+    //Scanning fingerprint and getting the results
+    public String scan(String deviceID,String sessionId ){
     
 	    String userFile = "/devices/"+deviceID+"/scan_fingerprint";
 
@@ -74,8 +78,8 @@ public class Device {
 
 	    return results;
 	}
-
-	public String[] userslist(String sessionId) throws URISyntaxException {
+	//Getting users list from the Biostar server
+	public String userslist(String sessionId ) throws URISyntaxException{
 
 		String userFile = "/users";
 		String url = baseUrl + userFile;
@@ -88,20 +92,9 @@ public class Device {
 		httpClient get = new httpClient();
 		String results = get.get(uri, sessionId);
 
-		JSONObject jsonObject = new JSONObject(results);
-		JSONArray jresponse = (JSONArray) jsonObject.get("records");
-
-		ArrayList<Object> list = new ArrayList<Object>();
-
-		for(int i=0; i<jresponse.length(); i++){
-			list.add(""+jresponse.getJSONObject(i).getString("user_id")+"");
-		}
-
-		String[] userID = list.toArray(new String[0]);
-
-		return userID;
+		return results;
 	}
-
+	//Enrolling user scanned finger prints to the server
 	public String enroll(String user_id,String sessionId,JSONObject jenroll){
 		
 		String userFile = "/users/"+user_id+"/fingerprint_templates";
@@ -114,7 +107,7 @@ public class Device {
 
 		return results;
 	}
-
+	//Activate or Deactivate a user
 	public String acinUser(String user_id,String sessionId,JSONObject jACINuser){
 
 	    String userFile = "/users/"+user_id+"";
@@ -127,7 +120,7 @@ public class Device {
 	    
 	    return results;
 	}
-
+	//Getting one user details
 	public String userDetails(String user_id,String sessionId) {
 		String results =null;
         try {
@@ -146,7 +139,7 @@ public class Device {
         }
          return results;
 	}
-
+	//Deleting user from the device
 	public void userDelDevice(String user_id,String deviceID,String sessionId) {
 
 		String userFile = "/devices/"+deviceID+"/users/"+user_id;
@@ -156,29 +149,29 @@ public class Device {
 		del.delete(uri,sessionId);
 
 	}
-
+	//Getting avilable device list from the server
 	public String deviceList(String sessionId) {
-            String results =null;
-            try {
-                String userFile = "/devices";
-                String url = baseUrl + userFile;
-                
-                URI uri = new URIBuilder(url)
-                        .addParameter("group_id", "")
-                        .addParameter("limit", "0")
-                        .addParameter("offset", "0")
-                        .build();
-                
-                httpClient get = new httpClient();
-                results = get.get(uri, sessionId);
-                
-                
-            } catch (URISyntaxException ex) {
-                Logger.getLogger(Device.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            return results;
+        String results =null;
+        try {
+            String userFile = "/devices";
+            String url = baseUrl + userFile;
+            
+            URI uri = new URIBuilder(url)
+                    .addParameter("group_id", "")
+                    .addParameter("limit", "0")
+                    .addParameter("offset", "0")
+                    .build();
+            
+            httpClient get = new httpClient();
+            results = get.get(uri, sessionId);
+            
+            
+        } catch (URISyntaxException ex) {
+            Logger.getLogger(Device.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return results;
 	}
-
+	//Getting the log event types name,code and descriptions
 	public String eventsType(String sessionId) {
         String results=null;
         try {
@@ -200,7 +193,7 @@ public class Device {
         }
         return results;
 	}
-
+	//Getting mothly log events occured
 	public String mothlyLogEvent(JSONObject jEventlog,String sessionId){
 	    
 	    String userFile = "/monitoring/event_log/search_by_device";
@@ -212,7 +205,7 @@ public class Device {
 
 	    return results;
 	}
-
+	//Searching for log events that have occured by device
 	public String searchLogEvent(JSONObject jEventlog,String sessionId){
 
         String userFile = "/monitoring/event_log/search_by_device";
@@ -222,8 +215,8 @@ public class Device {
         String results = post.post(uri, jEventlog.toString(), sessionId);
 
         return results;
-}
-
+	}
+	//Add user to the device you want
 	public void addUserDevice(JSONObject jUsersID,String deviceID,String sessionId) {
 
 		String userFile = "/devices/"+deviceID+"/users";
@@ -232,10 +225,8 @@ public class Device {
 		httpClient post = new httpClient();
 		post.post(uri, jUsersID.toString(), sessionId);
 
-		System.out.println("BASE 2010 : " + jUsersID.toString());
-
 	}
-
+	//Take photo from a webcam connected to your machine
 	public String takePhoto(String user_id){
 
 		String encodedFile = null;

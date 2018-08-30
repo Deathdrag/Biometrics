@@ -107,7 +107,7 @@ public class loginDesk implements ActionListener {
 		try {
 			db = DriverManager.getConnection(dbpath, dbuser, dbpassword);
 		} catch (SQLException ex) {
-			log.severe("Database connection Error.");
+			log.severe("Database connection Error. " + ex);
 		}
 	}
 

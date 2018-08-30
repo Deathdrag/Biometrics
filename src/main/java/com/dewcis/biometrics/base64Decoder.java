@@ -7,12 +7,10 @@ import org.apache.commons.codec.binary.Base64;
 
 public class base64Decoder {
     public FileOutputStream image=null;
-    public FileOutputStream image2=null;
     public char oldChar = '\\';
     public char newChar = '/';
     public String projDir = System.getProperty("user.dir");
     public String results = projDir.replace(oldChar, newChar);
-    
     public FileOutputStream decode(String imputimage,String user_id){
     String imageString=imputimage;
     

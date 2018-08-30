@@ -7,7 +7,10 @@ import java.util.List;
 import java.util.ArrayList;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URI;
+import java.util.Map;
+import java.util.logging.Level;
 import javax.swing.JOptionPane;
 
 import org.apache.http.Header;
@@ -29,14 +32,17 @@ import org.json.JSONObject;
 public class httpClient {
 	Logger log = Logger.getLogger(httpClient.class.getName());
 
-	String domain = "192.168.0.128";
-	
-	
+	base_url base = new base_url();
+        Map<String, String> mapResults = base.base_url();
+	String domain = mapResults.get("domain");
+
 	public String getCookies(String url, String sData) {
 		String content = "";
 		String message = null;
                 
 		DefaultHttpClient client = new DefaultHttpClient();
+
+        System.out.println("URL : " + url);
 
 		HttpPost pt = new HttpPost(url);
 		pt.setEntity(new StringEntity(sData, "UTF8"));
@@ -57,6 +63,7 @@ public class httpClient {
 			} else if(statusCode != 200) {
 				JSONObject jObject = new JSONObject(content);
 				JOptionPane.showMessageDialog(null, jObject.getString("message"));
+				System.out.println("IO Error : " + jObject);
 			}
 		} catch (IOException ex) {
 			System.out.println("IO Error : " + ex);
