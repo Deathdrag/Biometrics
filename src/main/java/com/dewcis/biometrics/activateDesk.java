@@ -107,7 +107,7 @@ public class activateDesk implements ActionListener {
 		camPanel.setBounds(425, 180, 350, 300);
 		mainPanel.add(camPanel);
 
-		ImageIcon pImage = new ImageIcon(""+myImage.results+"/images/"+jStudent.getString("user_id")+".PNG");
+		ImageIcon pImage = new ImageIcon(""+myImage.results+"/user photo images/"+jStudent.getString("user_id")+".PNG");
 		Image pimage1 = pImage.getImage();
 		Image pnewimg1 = pimage1.getScaledInstance(330,240,  Image.SCALE_SMOOTH);
 		pImage = new ImageIcon(pnewimg1);
@@ -178,6 +178,7 @@ public class activateDesk implements ActionListener {
             jStudent.remove("status");
             jStudent.put("status", "AC");
             dev.acinUser(jStudent.getString("user_id"),sessionId,jStudent);
+            btns.get(0).setEnabled(false);
             
         }
 		

@@ -14,7 +14,7 @@ public class base64Decoder {
     public FileOutputStream decode(String imputimage,String user_id){
     String imageString=imputimage;
     
-            try {
+    try {
             
             //Decoding Base64 encoded Byte Array to Image Byte array
             byte[] base64DecodedByteArray = Base64.decodeBase64(imageString);

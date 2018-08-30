@@ -239,9 +239,9 @@ public class Device {
                 BufferedImage image = webcam.getImage();
                 
                 base64Decoder myimage = new base64Decoder();
-                ImageIO.write(image, "PNG", new File(""+myimage.results+"/images/"+user_id+".png"));
+                ImageIO.write(image, "PNG", new File(""+myimage.results+"/user photo images/"+user_id+".PNG"));
                 
-                File file = new File(""+myimage.results+"/images/"+user_id+".png");
+                File file = new File(""+myimage.results+"/user photo images/"+user_id+".png");
                 FileInputStream fileInputStreamReader = new FileInputStream(file);
                 byte[] bytes = new byte[(int)file.length()];
                 fileInputStreamReader.read(bytes);

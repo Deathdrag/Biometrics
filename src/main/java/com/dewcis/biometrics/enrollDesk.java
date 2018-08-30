@@ -404,7 +404,7 @@ public class enrollDesk implements ActionListener {
 				dsk.get(0).setVisible(false);
 
 				base64Decoder photoImage = new base64Decoder();
-				ImageIcon pImage = new ImageIcon(""+photoImage.results+"/images/"+jStudent.getString("user_id")+".PNG");
+				ImageIcon pImage = new ImageIcon(""+photoImage.results+"/user photo images/"+jStudent.getString("user_id")+".PNG");
 				Image imgP = pImage.getImage();
 				Image newPImg = imgP.getScaledInstance(300,240,  Image.SCALE_SMOOTH);
 				pImage = new ImageIcon(newPImg);
