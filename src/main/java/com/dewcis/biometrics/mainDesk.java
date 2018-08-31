@@ -254,7 +254,8 @@ public class mainDesk extends JPanel implements MouseListener , ActionListener{
 		ArrayList<String> list1 = new ArrayList<String>();
 
 		JSONArray jEventcode = new JSONArray();
-
+		list.add("None");
+		list1.add("0000");
 		for(int i=0; i<tsmresponse.length(); i++){
 
 			list.add(tsmresponse.getJSONObject(i).getString("description"));
@@ -419,29 +420,29 @@ public class mainDesk extends JPanel implements MouseListener , ActionListener{
 			int eventLogName = cmbs.get(0).getSelectedIndex();
 			if(0!=eventLogName)
 			{   
-			eventLOG = logListcode[eventLogName];
+				eventLOG = logListcode[eventLogName];
+				JSONArray jCode = new JSONArray();
+				jCode.put(eventLOG);
+
+				JSONArray jEvent = new JSONArray();
+				JSONObject jEventDetails = new JSONObject();
+				jEventDetails.put("device_id", txfs.get(1).getText());
+				jEventDetails.put("end_datetime", txfs.get(3).getText()+"T23:59:00.00Z");
+				jEventDetails.put("start_datetime", txfs.get(2).getText()+"T00:00:00.00Z");
+				jEvent.put(jEventDetails);
+
+				JSONObject jSearchEvent = new JSONObject();
+				jSearchEvent.put("device_query_list", jEvent);
+				jSearchEvent.put("event_type_code_list", jCode);
+				jSearchEvent.put("limit", 0);
+				jSearchEvent.put("offset", 0);
+
+				Device dev = new Device();
+				String eventlogView = dev.searchLogEvent(jSearchEvent,sessionId);
+				searchLogDesk srch = new searchLogDesk(eventlogView);
+			}else if (0==eventLogName) {
+				JOptionPane.showMessageDialog(null, "You can't Search For None Log Events");
 			}
-
-			JSONArray jCode = new JSONArray();
-			jCode.put(eventLOG);
-
-			JSONArray jEvent = new JSONArray();
-			JSONObject jEventDetails = new JSONObject();
-			jEventDetails.put("device_id", txfs.get(1).getText());
-			jEventDetails.put("end_datetime", txfs.get(3).getText()+"T23:59:00.00Z");
-			jEventDetails.put("start_datetime", txfs.get(2).getText()+"T00:00:00.00Z");
-			jEvent.put(jEventDetails);
-
-			JSONObject jSearchEvent = new JSONObject();
-			jSearchEvent.put("device_query_list", jEvent);
-			jSearchEvent.put("event_type_code_list", jCode);
-			jSearchEvent.put("limit", 0);
-			jSearchEvent.put("offset", 0);
-
-			Device dev = new Device();
-			String eventlogView = dev.searchLogEvent(jSearchEvent,sessionId);
-			searchLogDesk srch = new searchLogDesk(eventlogView);
-			
 		}
 	}
 }
