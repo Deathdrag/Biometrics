@@ -256,7 +256,7 @@ public class registerDesk implements ActionListener {
 			// fImage1 = new ImageIcon(fNewimg1);
 
 			String finger1Details = dev.scan(txfs.get(0).getText(),sessionId);
-                        msg.get(0).setText(finger1Details);
+            msg.get(0).setText(finger1Details);
                         
 			if(finger1Details.contains("Scan quality is low.")){
 			    System.out.println("Scan quality is low.");
@@ -352,7 +352,6 @@ public class registerDesk implements ActionListener {
 				jarrayFinger.put(jfingerItem);
 				jarrayFinger.put(jfingerItem2);
 				jfinger.put("fingerprint_template_list",jarrayFinger);
-				System.out.println("BASE 2010 Finger Prints : " + jfinger.toString());
 				String enResults =dev.enroll(jStudent.getString("user_id"),sessionId,jfinger);
                                 
                 msg.get(0).setText(enResults);

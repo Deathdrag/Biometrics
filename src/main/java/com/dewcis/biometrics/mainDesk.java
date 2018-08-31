@@ -349,7 +349,6 @@ public class mainDesk extends JPanel implements MouseListener , ActionListener{
 			// Selected Row in the Registerd users in the second JTabbedPane called "Registred".
 			System.out.println("selected tab Index is: " + selectedIndex);
 			int aRow = tableReg.getSelectedRow();
-			System.out.println("BASE 2010 " + aRow);
 			if ((aRow != -1) && (ev.getClickCount() == 2)) {
 				int index = tableReg.convertRowIndexToModel(aRow);
 				registerDesk rDesk = new registerDesk(tModel.getTitles(), tModel.getRowValues(index), sessionId);
@@ -397,7 +396,6 @@ public class mainDesk extends JPanel implements MouseListener , ActionListener{
 
 			Device dev = new Device();
 			String eventlogView = dev.searchLogEvent(jSearchEvent,sessionId);
-			System.out.println("Scan quality is low."+eventlogView);
 
 			JSONObject jsonObject = new JSONObject(eventlogView);
 			JSONArray tsmresponse = (JSONArray) jsonObject.get("records");
