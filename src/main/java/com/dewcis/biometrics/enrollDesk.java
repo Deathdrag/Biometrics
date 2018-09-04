@@ -262,7 +262,7 @@ public class enrollDesk implements ActionListener {
 			    System.out.println("Device Timed Out");
 			    finger1Details=null;
 			    lbls.get(0).setIcon(fImage1);
-			}else{
+			}else {
 				scan1Details = "Scan quality is Good.";
 
 			    JSONObject jFingerScan = new JSONObject(finger1Details);
